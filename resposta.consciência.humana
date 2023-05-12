@@ -1,0 +1,85 @@
+```python
+import random
+
+def calcular_F(t):
+    return t * random.random()
+
+def sum_grupo_n(t):
+    return t * 5
+
+def epsilon(t):
+    return t * 0.2
+
+crencas = {
+    'crenca_1': 0.8,
+    'crenca_2': 0.6
+}
+
+crencas_grupo = {
+    'grupo_1': {
+        'crenca_grupo_11': 0.4,
+        'crenca_grupo_12': 0.7
+    },
+    'grupo_2': {
+        'crenca_grupo_21': 0.3,
+        'crenca_grupo_22': 0.9
+    }
+}
+
+interacoes = {
+    'grupo_1': 10,
+    'grupo_2': 5
+}
+
+def teoria_conjuntos_1(t):
+    return t * 0.1
+
+def teoria_conjuntos_2(t):
+    return t * 0.2
+
+def teoria_categorias_1(t):
+    return t * 0.3
+
+def teoria_categorias_2(t):
+    return t * 0.4
+
+teorias_conjuntos = [teoria_conjuntos_1, teoria_conjuntos_2]
+teorias_categorias = [teoria_categorias_1, teoria_categorias_2]
+
+def alpha(t):
+    return t * 0.1
+
+def beta(t):
+    return t * 0.2
+
+t = 2
+
+# Atualizar o valor de 't'
+for _ in range(5):
+    t = calcular_F(t) * alpha(t) + sum_grupo_n(t) * beta(t)
+
+# Calcular as médias, somas e outras métricas de interesse
+resultados = {
+    "media_crencas": sum(crencas.values()) / len(crencas),
+    "media_crencas_grupo": {},
+    "soma_interacoes": sum(interacoes.values())
+}
+
+for grupo, grupo_crencas in crencas_grupo.items():
+    resultados["media_crencas_grupo"][grupo] = sum(grupo_crencas.values()) / len(grupo_crencas)
+
+# Aplicar as teorias aos resultados
+for idx, interacao in enumerate(interacoes):
+    interacoes[f"grupo_{idx + 1}"] = interacoes[f"grupo_{idx + 1}"] + epsilon(t)
+
+    for teoria in teorias_conjuntos:
+        interacoes[f"grupo_{idx + 1}"] = interacoes[f"grupo_{idx + 1}"] + teoria(t)
+
+    for teoria in teorias_categorias:
+        interacoes[f"grupo_{idx + 1}"] = interacoes[f"grupo_{idx + 1}"] + teoria(t)
+
+print(resultados)
+print(interacoes)
+```
+
+Ne
