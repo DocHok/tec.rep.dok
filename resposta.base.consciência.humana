@@ -1,0 +1,84 @@
+```python
+from typing import List, Dict
+
+def congruencia_conj_categ(teoria_conj: List[function], teoria_categ: List[function], alpha: float, beta: float, epsilon: float) -> bool:
+    """
+    Calcula a congruência entre as teorias dos conjuntos e das categorias comparando com um limite epsilon. 
+    
+    Parâmetros:
+    ------------
+    teoria_conj : lista de funções
+        Funções que representam as teorias dos conjuntos.
+    teoria_categ : lista de funções
+        Funções que representam as teorias das categorias.
+    alpha : float
+        Peso para a teoria dos conjuntos.
+    beta : float
+        Peso para a teoria das categorias.
+    epsilon : float
+        Limite máximo de diferença entre as teorias para ser considerada congruente.
+    
+    Returns:
+    --------
+    bool
+        True se a congruência for verificada, False caso contrário. 
+    """
+    if len(teoria_conj) != len(teoria_categ):
+        raise ValueError("As listas de funções de teoria dos conjuntos e teoria das categorias precisam ter o mesmo tamanho.")
+    
+    congruencia = sum(alpha * abs(teoria_conj[i](t)) +
+                      beta * abs(teoria_categ[i](t)) for i in range(len(teoria_conj)))
+    
+    return abs(congruencia) < epsilon
+
+def resposta_consciencia_humana(crencas: Dict[str, float], crencas_grupo: Dict[str, Dict[str, float]],
+                                interacoes: Dict[str, Dict[str, float]], teorias_conjuntos: List[function],
+                                teorias_categorias: List[function], alpha: float, beta: float, t: float) -> Dict[str, float]:
+    """
+    Função que calcula a relação entre as crenças individuais e grupais, 
+    assim como a congruência entre teorias dos conjuntos e das categorias.
+    
+    Parâmetros:
+    ------------
+    crencas : dicionário
+        Dicionário contendo as crenças individuais.
+    crencas_grupo : dicionário
+        Dicionário contendo os grupos e suas crenças.
+    interacoes : dicionário
+        Dicionário contendo os grupos e suas interações.
+    teorias_conjuntos : lista de funções
+        Funções que representam as teorias dos conjuntos.
+    teorias_categorias : lista de funções
+        Funções que representam as teorias das categorias.
+    alpha : float
+        Peso para a teoria dos conjuntos.
+    beta : float
+        Peso para a teoria das categorias.
+    t : float
+        Parâmetro de tempo.
+    
+    Returns:
+    ---------
+    resultado: dicionário
+        Dicionário contendo a relação entre as crenças individuais e grupais e a congruência entre as teorias.
+    """
+    if not isinstance(crencas, dict) or not isinstance(crencas_grupo, dict) or not isinstance(interacoes, dict):
+        raise TypeError("Os parâmetros 'crencas', 'crencas_grupo' e 'interacoes' devem ser dicionários.")
+    
+    if not isinstance(teorias_conjuntos, list) or not isinstance(teorias_categorias, list):
+        raise TypeError("Os parâmetros 'teorias_conjuntos' e 'teorias_categorias' devem ser listas de funções.")
+    
+    relacao_crencas = {}
+    for user, crenca in crencas.items():
+        grupo = next((k for k, v in crencas_grupo.items() if user in v), None)
+        if grupo:
+            crenca_grupo = crencas_grupo[grupo][user]
+            relacao_crencas[user] = alpha * crenca + beta * crenca_grupo
+        else:
+            relacao_crencas[user] = alpha * crenca
+    
+    congruencia = congruencia_conj_categ(teorias_conjuntos, teorias_categorias, alpha, beta, t)
+    
+    resultado = {"relacao_crencas": relacao_crencas, "congruencia": congruencia}
+    
+    return resultado
